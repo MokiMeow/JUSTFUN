@@ -1,58 +1,67 @@
 import clsx from "clsx";
 import gsap from "gsap";
-import { useWindowScroll } from "react-use";
 import { useEffect, useRef, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 
 import Button from "./Button";
 
-const navItems = ["Nexus", "Vault", "Prologue", "About", "Contact"];
+const navItems = [
+  { label: "About", href: "#about" },
+  { label: "Features", href: "#features" },
+  { label: "Story", href: "#story" },
+  { label: "Contact", href: "#contact" },
+];
 
 const NavBar = () => {
   // State for toggling audio and visual indicator
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  const [isIndicatorActive, setIsIndicatorActive] = useState(false);
 
   // Refs for audio and navigation container
   const audioElementRef = useRef(null);
   const navContainerRef = useRef(null);
 
-  const { y: currentScrollY } = useWindowScroll();
   const [isNavVisible, setIsNavVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
 
   // Toggle audio and visual indicator
-  const toggleAudioIndicator = () => {
-    setIsAudioPlaying((prev) => !prev);
-    setIsIndicatorActive((prev) => !prev);
+  const toggleAudioIndicator = async () => {
+    const audio = audioElementRef.current;
+    if (!audio) return;
+
+    if (audio.paused) {
+      try {
+        await audio.play();
+        setIsAudioPlaying(true);
+      } catch (error) {
+        console.warn("Background audio could not start:", error);
+        setIsAudioPlaying(false);
+      }
+    } else {
+      audio.pause();
+      setIsAudioPlaying(false);
+    }
   };
 
-  // Manage audio playback
   useEffect(() => {
-    if (isAudioPlaying) {
-      audioElementRef.current.play();
-    } else {
-      audioElementRef.current.pause();
-    }
-  }, [isAudioPlaying]);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const nav = navContainerRef.current;
+      if (!nav) return;
 
-  useEffect(() => {
-    if (currentScrollY === 0) {
-      // Topmost position: show navbar without floating-nav
-      setIsNavVisible(true);
-      navContainerRef.current.classList.remove("floating-nav");
-    } else if (currentScrollY > lastScrollY) {
-      // Scrolling down: hide navbar and apply floating-nav
-      setIsNavVisible(false);
-      navContainerRef.current.classList.add("floating-nav");
-    } else if (currentScrollY < lastScrollY) {
-      // Scrolling up: show navbar with floating-nav
-      setIsNavVisible(true);
-      navContainerRef.current.classList.add("floating-nav");
-    }
+      if (currentScrollY === 0) {
+        setIsNavVisible(true);
+        nav.classList.remove("floating-nav");
+      } else {
+        setIsNavVisible(currentScrollY < lastScrollYRef.current);
+        nav.classList.add("floating-nav");
+      }
+      lastScrollYRef.current = currentScrollY;
+    };
 
-    setLastScrollY(currentScrollY);
-  }, [currentScrollY, lastScrollY]);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     gsap.to(navContainerRef.current, {
@@ -71,11 +80,14 @@ const NavBar = () => {
         <nav className="flex size-full items-center justify-between p-4">
           {/* Logo and Product button */}
           <div className="flex items-center gap-7">
-            <img src="/img/logo.png" alt="logo" className="w-10" />
+            <a href="#top" aria-label="Back to top">
+              <img src="/img/logo.png" alt="JUSTFUN" className="w-10" />
+            </a>
 
             <Button
               id="product-button"
               title="Products"
+              href="#features"
               rightIcon={<TiLocationArrow />}
               containerClass="bg-blue-50 md:flex hidden items-center justify-center gap-1"
             />
@@ -84,13 +96,13 @@ const NavBar = () => {
           {/* Navigation Links and Audio Button */}
           <div className="flex h-full items-center">
             <div className="hidden md:block">
-              {navItems.map((item, index) => (
+              {navItems.map((item) => (
                 <a
-                  key={index}
-                  href={`#${item.toLowerCase()}`}
+                  key={item.href}
+                  href={item.href}
                   className="nav-hover-btn"
                 >
-                  {item}
+                  {item.label}
                 </a>
               ))}
             </div>
@@ -98,18 +110,22 @@ const NavBar = () => {
             <button
               onClick={toggleAudioIndicator}
               className="ml-10 flex items-center space-x-0.5"
+              type="button"
+              aria-label={isAudioPlaying ? "Pause background audio" : "Play background audio"}
+              aria-pressed={isAudioPlaying}
             >
               <audio
                 ref={audioElementRef}
                 className="hidden"
                 src="/audio/loop.mp3"
                 loop
+                preload="none"
               />
               {[1, 2, 3, 4].map((bar) => (
                 <div
                   key={bar}
                   className={clsx("indicator-line", {
-                    active: isIndicatorActive,
+                    active: isAudioPlaying,
                   })}
                   style={{
                     animationDelay: `${bar * 0.1}s`,

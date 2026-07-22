@@ -2,6 +2,7 @@ import { gsap } from "gsap";
 import { useEffect, useRef } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import clsx from "clsx";
+import { parseStyledTitle } from "../utils/title";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -36,17 +37,21 @@ const AnimatedTitle = ({ title, containerClass }) => {
 
   return (
     <div ref={containerRef} className={clsx("animated-title", containerClass)}>
-      {title.split("<br />").map((line, index) => (
+      {parseStyledTitle(title).map((line, index) => (
         <div
           key={index}
           className="flex-center max-w-full flex-wrap gap-2 px-10 md:gap-3"
         >
-          {line.split(" ").map((word, idx) => (
-            <span
-              key={idx}
-              className="animated-word"
-              dangerouslySetInnerHTML={{ __html: word }}
-            />
+          {line.map((word, idx) => (
+            <span key={idx} className="animated-word">
+              {word.map((part, partIndex) =>
+                part.emphasized ? (
+                  <b key={partIndex}>{part.text}</b>
+                ) : (
+                  <span key={partIndex}>{part.text}</span>
+                ),
+              )}
+            </span>
           ))}
         </div>
       ))}

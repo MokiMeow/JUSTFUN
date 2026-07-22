@@ -1,7 +1,7 @@
 import { gsap } from "gsap";
 import { useState, useRef, useEffect } from "react";
 
-export const VideoPreview = ({ children }) => {
+const VideoPreview = ({ children }) => {
   const [isHovering, setIsHovering] = useState(false);
 
   const sectionRef = useRef(null); // Reference for the container section
@@ -24,6 +24,7 @@ export const VideoPreview = ({ children }) => {
         transformPerspective: 500, // Perspective for realistic 3D effect
         duration: 1,
         ease: "power1.out",
+        overwrite: "auto",
       });
 
       // Move the inner content in the opposite direction for a parallax effect
@@ -32,11 +33,15 @@ export const VideoPreview = ({ children }) => {
         y: -yOffset,
         duration: 1,
         ease: "power1.out",
+        overwrite: "auto",
       });
     }
   };
 
   useEffect(() => {
+    const section = sectionRef.current;
+    const content = contentRef.current;
+
     // Reset the position of the content when hover ends
     if (!isHovering) {
       gsap.to(sectionRef.current, {
@@ -46,6 +51,7 @@ export const VideoPreview = ({ children }) => {
         rotationX: 0,
         duration: 1,
         ease: "power1.out",
+        overwrite: "auto",
       });
 
       gsap.to(contentRef.current, {
@@ -53,8 +59,13 @@ export const VideoPreview = ({ children }) => {
         y: 0,
         duration: 1,
         ease: "power1.out",
+        overwrite: "auto",
       });
     }
+
+    return () => {
+      gsap.killTweensOf([section, content]);
+    };
   }, [isHovering]);
 
   return (

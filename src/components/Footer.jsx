@@ -3,22 +3,22 @@ import { FaDiscord, FaTwitter, FaYoutube, FaMedium } from "react-icons/fa"
 const socialLinks = [
   {
     href: "https://discord.com",
-    icon: <FaDiscord className="h-5 w-5" />,
+    icon: <FaDiscord className="size-5" />,
     label: "Discord"
   },
   {
     href: "https://twitter.com",
-    icon: <FaTwitter className="h-5 w-5" />,
+    icon: <FaTwitter className="size-5" />,
     label: "Twitter"
   },
   {
     href: "https://youtube.com",
-    icon: <FaYoutube className="h-5 w-5" />,
+    icon: <FaYoutube className="size-5" />,
     label: "YouTube"
   },
   {
     href: "https://medium.com",
-    icon: <FaMedium className="h-5 w-5" />,
+    icon: <FaMedium className="size-5" />,
     label: "Medium"
   },
 ]
@@ -48,7 +48,7 @@ const Footer = () => {
           {/* Copyright section */}
           <div className="flex flex-col items-center justify-center md:items-start">
             <p className="text-sm font-medium text-white/90">
-              ©Nova 2024. All rights reserved
+              © MokiMeow {new Date().getFullYear()}. Educational showcase.
             </p>
           </div>
 
@@ -76,16 +76,16 @@ const Footer = () => {
           {/* Links section */}
           <div className="flex flex-col items-center justify-center gap-2 md:items-end">
             <a
-              href="#privacy-policy"
+              href="#about"
               className="text-sm font-medium text-white/90 transition-colors duration-300 hover:text-white hover:underline"
             >
-              Privacy Policy
+              About
             </a>
             <a
-              href="#terms"
+              href="#contact"
               className="text-sm font-medium text-white/90 transition-colors duration-300 hover:text-white hover:underline"
             >
-              Terms of Service
+              Contact
             </a>
           </div>
         </div>

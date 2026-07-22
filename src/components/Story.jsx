@@ -46,7 +46,7 @@ const FloatingImage = () => {
   };
 
   return (
-    <div id="story" className="min-h-dvh w-screen bg-black text-blue-50">
+    <div id="story" className="min-h-dvh w-screen scroll-mt-20 bg-black text-blue-50">
       <div className="flex size-full flex-col items-center py-10 pb-24">
         <p className="font-general text-sm uppercase md:text-[10px]">
           the multiversal ip world
@@ -68,7 +68,9 @@ const FloatingImage = () => {
                   onMouseUp={handleMouseLeave}
                   onMouseEnter={handleMouseLeave}
                   src="/img/entrance.webp"
-                  alt="entrance.webp"
+                  alt="A gateway into the hidden realm"
+                  loading="lazy"
+                  decoding="async"
                   className="object-contain"
                 />
               </div>
@@ -114,6 +116,7 @@ const FloatingImage = () => {
             <Button
               id="realm-btn"
               title="discover prologue"
+              href="#contact"
               containerClass="mt-5"
             />
           </div>
